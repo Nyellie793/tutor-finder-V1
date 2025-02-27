@@ -1,8 +1,9 @@
+import LoginScreen from "@/components/LoginScreen"
 
 
 const LoginPage = () => {
   return (
-    <div>LoginPage</div>
+    <LoginScreen />
   )
 }
 

@@ -1,8 +1,9 @@
+import SignupScreen from "@/components/SignUpScreen"
 
 
 const SignupPage = () => {
   return (
-    <div>SignupPage</div>
+    <SignupScreen />
   )
 }
 

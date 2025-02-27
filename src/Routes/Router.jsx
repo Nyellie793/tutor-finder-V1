@@ -3,9 +3,9 @@ import { createBrowserRouter, RouterProvider} from 'react-router-dom';
 import HomePage from '../pages/Home';
 import AboutPage from '../pages/About';
 import FindPage from '../pages/Find';
-import BecomePage from '../pages/Become';
 import SignupPage from '../pages/Signup';
 import LoginPage from '../pages/Login';
+import GigsPage from '../pages/Gigs';
 
 
 
@@ -26,9 +26,10 @@ const router = createBrowserRouter([
     },
 
     {
-        path: '/become-tutor',
-        element: <BecomePage/>
+        path: '/gigs',
+        element: <GigsPage />
     },
+
 
     {
         path: '/signup',

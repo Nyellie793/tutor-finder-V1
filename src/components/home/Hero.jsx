@@ -32,6 +32,7 @@ const Hero = () => {
      <div className="hero-content">
        <h1>Find the perfect tutor/teacher, mentor or coach for your learning journey </h1>
        <p className='hero-subtitle'>Connect with experts in any subject, anytime, anywhere to achieve your learning goals </p>
+       
        <div className="search-container">
          <div className='search-wrapper'>
            <input
@@ -42,6 +43,7 @@ const Hero = () => {
            <button className="search-btn">Find Tutors</button>
          </div>
        </div>
+       
        <div className="stats">
          <div className="stat-item">
            <span className="stat-number">5000+</span>

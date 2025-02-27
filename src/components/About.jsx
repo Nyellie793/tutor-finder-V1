@@ -23,14 +23,14 @@ function AboutPage() {
             learning experiences that transform lives.</p>
           </div>
           <div className="about-image">
-            <img src="/about-mission.jpg" alt="Our Mission" />
+            <img src="public/lexscope-0k2mMcdTOYU-unsplash.jpg" alt="Our Mission" />
           </div>
         </div>
 
         {/* Section 2 - Image Left, Text Right */}
         <div className="about-section reverse">
           <div className="about-image">
-            <img src="/about-vision.jpg" alt="Our Vision" />
+            <img src="public/wonderlane-b9-odQi5oDo-unsplash.jpg" alt="Our Vision" />
           </div>
           <div className="about-text">
             <h2>Our Vision</h2>
