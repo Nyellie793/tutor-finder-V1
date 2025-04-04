@@ -51,7 +51,7 @@ const TutorInfoCards = () => {
   ];
 
   return (
-    <div className="bg-gradient-to-r from-pink-50 to-teal-50 py-10 px-4">
+    <div className="bg-gradient-to-r from-pink-50 to-teal-50 py-9 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {benefitCards.map((card, index) => (

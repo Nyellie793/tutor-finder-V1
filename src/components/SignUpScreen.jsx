@@ -1,69 +1,126 @@
-/* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-import Logo from "./Logo"; // Importing the logo
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, useNavigate } from "react-router-dom";
+import Logo from "./Logo";
+import { registerSchema } from "@/schemas/RegisterSchema";
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { Checkbox } from "./ui/checkbox";
+
+import addImage from "/images/add-image.png";
+
+import { useApi } from "@/utils/fetcher";
+import toast from "react-hot-toast";
 
 const SignupScreen = () => {
   const [userType, setUserType] = useState("learner");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const fileInputRef = useRef(null);
+  const { API } = useApi();
+  const navigate = useNavigate();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-    reset,
-  } = useForm({
+  // Initialize form with zodResolver
+  const form = useForm({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
       email: "",
       password: "",
-      confirm_password: "",
+      password_confirmation: "",
       phone_number: "",
       whatsapp_number: "",
       location: "",
+      user_type: userType,
+      profile_image: undefined,
     },
   });
 
+  const { errors } = form.formState;
+
   const handleUserTypeChange = (type) => {
     setUserType(type);
+    form.setValue("user_type", type);
   };
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Update the form value
+      form.setValue("profile_image", file);
+
+      // Create preview URL
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  // Clean up object URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const onSubmit = async (data) => {
     try {
       setIsSubmitting(true);
 
-      // Here you would send the data to your API
-      // const response = await fetch('your_api_endpoint/register', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(submitData),
-      // });
+      // Create FormData for file upload
+      const formData = new FormData();
 
-      // if (!response.ok) {
-      //   throw new Error('Registration failed');
-      // }
+      // Append all form fields to FormData
+      Object.keys(data).forEach((key) => {
+        if (key === "profile_image" && data[key]) {
+          formData.append(key, data[key]);
+        } else if (data[key] !== undefined) {
+          formData.append(key, data[key]);
+        }
+      });
 
-      // const result = await response.json();
-      // console.log('Registration successful:', result);
+      // Send the registration request
+      const response = await API.registerUser(formData);
 
-      reset(); // Reset the form after successful submission
-      console.log("form data: ", { ...data, user_type: userType });
+      // Handle successful registration
+      toast.success("Account created successfully");
+      console.log("user: ", response);
 
-      // Redirect to login or onboarding page
-      // history.push('/login');
+      form.reset();
+      setPreviewUrl(null);
+
+      navigate("/login", {
+        replace: true,
+        state: {
+          registrationSuccess: true,
+        },
+      });
     } catch (error) {
       console.error("Error during signup:", error);
-      alert("Signup failed. Please try again.");
+
+      // Fixed this line to use toast.error instead of toast as an object
+      toast.error(
+        error.message || "An error occurred during signup. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  const password = watch("password");
 
   // Custom styles based on the color scheme
   const styles = {
@@ -122,224 +179,173 @@ const SignupScreen = () => {
             </div>
           </div>
 
-          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <input type="hidden" {...register("user_type")} value={userType} />
-
-            {/* Full Name */}
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-[#333333]"
-              >
-                Full Name
-              </label>
-              <div className="mt-1">
-                <input
-                  id="name"
-                  type="text"
-                  {...register("name", { required: "Name is required" })}
-                  className={`appearance-none block w-full px-3 py-2 border ${
-                    errors.name ? "border-red-300" : "border-gray-300"
-                  } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#87ceeb] focus:border-[#87ceeb] sm:text-sm`}
-                />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.name.message}
-                  </p>
-                )}
-              </div>
+          {/* Profile Picture Section */}
+          <div className="flex flex-col items-center space-y-2 mb-6">
+            <div
+              onClick={handleImageClick}
+              className="cursor-pointer w-24 h-24 relative border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center overflow-hidden"
+            >
+              <img
+                src={previewUrl || addImage}
+                alt="Profile preview"
+                className="w-full h-full object-cover rounded-full"
+              />
+              {!previewUrl && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-60">
+                  <span className="text-gray-600 text-xs text-center">
+                    Click to add
+                    <br />
+                    profile photo
+                  </span>
+                </div>
+              )}
             </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            {errors.profile_image && (
+              <p className="text-sm text-red-500">
+                {errors.profile_image.message}
+              </p>
+            )}
+          </div>
 
-            {/* Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-[#333333]"
-              >
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  type="email"
-                  {...register("email", {
-                    required: "Email is required",
-                  })}
-                  className={`appearance-none block w-full px-3 py-2 border ${
-                    errors.email ? "border-red-300" : "border-gray-300"
-                  } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#87ceeb] focus:border-[#87ceeb] sm:text-sm`}
-                />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.email.message}
-                  </p>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Full Name */}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your full name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-            </div>
+              />
 
-            {/* Password */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-[#333333]"
-              >
-                Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  type="password"
-                  {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 8,
-                      message: "Password must be at least 8 characters",
-                    },
-                  })}
-                  className={`appearance-none block w-full px-3 py-2 border ${
-                    errors.password ? "border-red-300" : "border-gray-300"
-                  } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#87ceeb] focus:border-[#87ceeb] sm:text-sm`}
-                />
-                {errors.password && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.password.message}
-                  </p>
+              {/* Email */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Enter your email"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-            </div>
+              />
 
-            {/* Confirm Password */}
-            <div>
-              <label
-                htmlFor="confirm_password"
-                className="block text-sm font-medium text-[#333333]"
-              >
-                Confirm Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="confirm_password"
-                  type="password"
-                  {...register("confirm_password", {
-                    required: "Please confirm your password",
-                    validate: (value) =>
-                      value === password || "Passwords do not match",
-                  })}
-                  className={`appearance-none block w-full px-3 py-2 border ${
-                    errors.confirm_password
-                      ? "border-red-300"
-                      : "border-gray-300"
-                  } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#87ceeb] focus:border-[#87ceeb] sm:text-sm`}
-                />
-                {errors.confirm_password && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.confirm_password.message}
-                  </p>
+              {/* Password */}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Minimum 8 characters"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-            </div>
+              />
 
-            {/* Phone Number */}
-            <div>
-              <label
-                htmlFor="phone_number"
-                className="block text-sm font-medium text-[#333333]"
-              >
-                Phone Number
-              </label>
-              <div className="mt-1">
-                <input
-                  id="phone_number"
-                  type="tel"
-                  {...register("phone_number", {
-                    required: "Phone number is required",
-                  })}
-                  className={`appearance-none block w-full px-3 py-2 border ${
-                    errors.phone_number ? "border-red-300" : "border-gray-300"
-                  } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#87ceeb] focus:border-[#87ceeb] sm:text-sm`}
-                  placeholder="e.g. +123 456 7890"
-                />
-                {errors.phone_number && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.phone_number.message}
-                  </p>
+              {/* Confirm Password */}
+              <FormField
+                control={form.control}
+                name="password_confirmation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Confirm your password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-            </div>
+              />
 
-            {/* WhatsApp Number */}
-            <div>
-              <label
-                htmlFor="whatsapp_number"
-                className="block text-sm font-medium text-[#333333]"
-              >
-                WhatsApp Number
-                <span className="ml-1 text-xs text-gray-500">
-                  (This will be used to connect with{" "}
-                  {userType === "learner" ? "tutors" : "learners"})
-                </span>
-              </label>
-              <div className="mt-1">
-                <input
-                  id="whatsapp_number"
-                  type="tel"
-                  {...register("whatsapp_number", {
-                    required: "WhatsApp number is required",
-                  })}
-                  className={`appearance-none block w-full px-3 py-2 border ${
-                    errors.whatsapp_number
-                      ? "border-red-300"
-                      : "border-gray-300"
-                  } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#87ceeb] focus:border-[#87ceeb] sm:text-sm`}
-                  placeholder="e.g. +123 456 7890"
-                />
-                {errors.whatsapp_number && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.whatsapp_number.message}
-                  </p>
+              {/* Phone Number */}
+              <FormField
+                control={form.control}
+                name="phone_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. +123 456 7890" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-            </div>
+              />
 
-            {/* Location */}
-            <div>
-              <label
-                htmlFor="location"
-                className="block text-sm font-medium text-[#333333]"
-              >
-                Location
-              </label>
-              <div className="mt-1">
-                <input
-                  id="location"
-                  type="text"
-                  {...register("location", {
-                    required: "Location is required",
-                  })}
-                  className={`appearance-none block w-full px-3 py-2 border ${
-                    errors.location ? "border-red-300" : "border-gray-300"
-                  } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#87ceeb] focus:border-[#87ceeb] sm:text-sm`}
-                  placeholder="City, Country"
-                />
-                {errors.location && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.location.message}
-                  </p>
+              {/* WhatsApp Number
+              <FormField
+                control={form.control}
+                name="whatsapp_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      WhatsApp Number
+                      <span className="ml-1 text-xs text-gray-500">
+                        (For connecting with{" "}
+                        {userType === "learner" ? "tutors" : "learners"})
+                      </span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. +123 456 7890" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-            </div>
+              /> */}
 
-            {/* Terms and privacy policy */}
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
-                <input
-                  id="terms"
-                  type="checkbox"
-                  className="focus:ring-[#87ceeb] h-4 w-4 text-[#0097a7] border-gray-300 rounded"
-                />
-              </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor="terms" className="font-medium text-[#333333]">
+              {/* Location */}
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl>
+                      <Input placeholder="City, Country" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Terms and Conditions */}
+              <div className="flex items-center space-x-2">
+                <Checkbox id="terms" />
+                <label
+                  htmlFor="terms"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
                   I agree to the{" "}
                   <a href="#" className={styles.link}>
                     Terms of Service
@@ -349,26 +355,18 @@ const SignupScreen = () => {
                     Privacy Policy
                   </a>
                 </label>
-                {errors.terms && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.terms.message}
-                  </p>
-                )}
               </div>
-            </div>
 
-            <div>
-              <button
+              {/* Submit Button */}
+              <Button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-md text-sm font-medium ${
-                  styles.primaryButton
-                } ${isSubmitting ? "opacity-75 cursor-not-allowed" : ""}`}
+                className={`w-full ${styles.primaryButton}`}
               >
                 {isSubmitting ? "Creating account..." : "Create account"}
-              </button>
-            </div>
-          </form>
+              </Button>
+            </form>
+          </Form>
 
           <div className="mt-6">
             <div className="relative">
@@ -382,10 +380,11 @@ const SignupScreen = () => {
               </div>
             </div>
 
-            <div className="mt-6 w-auto sm:w-full">
-              <button
+            <div className="mt-6">
+              <Button
                 type="button"
-                className={`w-full inline-flex justify-center py-2 px-4 border rounded-md shadow-sm bg-white text-sm font-medium ${styles.secondaryButton}`}
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2"
               >
                 <svg
                   className="w-5 h-5"
@@ -398,7 +397,8 @@ const SignupScreen = () => {
                   <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
                   <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
-              </button>
+                Continue with Google
+              </Button>
             </div>
           </div>
         </div>

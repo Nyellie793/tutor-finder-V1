@@ -10,17 +10,34 @@ import {
 } from "@/components/ui/sheet";
 import LinkButton from "./LinkButton";
 import Logo from "./Logo";
-
-const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About Us" },
-  { href: "/find-tutor", label: "Find Tutor" },
-  { href: "/gigs", label: "Gigs" },
-  { href: "/learner-dashboard", label: "Learner Dashboard" },
-];
+import UserButton from "./GigsDashboard/UserButton";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const userDataString = localStorage.getItem("user");
+  const userData = userDataString ? JSON.parse(userDataString) : null;
+  const userType = userData?.user_type;
+  console.log("u type: ", userType);
+
+  console.log("user: ", userData);
+  console.log("userData.id: ", userData?.id);
+
+  const baseNavItems = [
+    { href: "/", label: "Home" },
+    { href: "/about", label: "About Us" },
+    { href: "/find-tutor", label: "Find Tutor" },
+    { href: "/gigs", label: "Gigs" },
+  ];
+
+  const navItems =
+    userType === "learner"
+      ? [
+          ...baseNavItems,
+          { href: "/learner-dashboard", label: "Learner Dashboard" },
+        ]
+      : baseNavItems;
+
+  console.log("nav");
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[rgba(199,184,234,0.2)]">
@@ -48,11 +65,15 @@ const Navbar = () => {
             </NavLink>
           ))}
 
-          {/* Desktop Auth Buttons */}
-          <div className="flex items-center gap-3 ml-2">
-            <LinkButton route="/login" label="Login" />
-            <LinkButton route="/signup" label="Sign Up" />
-          </div>
+          {/* Conditional rendering of UserButton or Auth buttons */}
+          {userData ? (
+            <UserButton />
+          ) : (
+            <div className="flex items-center gap-3 ml-2">
+              <LinkButton route="/login" label="Login" />
+              <LinkButton route="/signup" label="Sign Up" />
+            </div>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -87,11 +108,15 @@ const Navbar = () => {
                 </NavLink>
               ))}
 
-              {/* Mobile Auth Buttons */}
-              <div className="flex flex-col gap-3 mt-4">
-                <LinkButton route="/login" label="Login" />
-                <LinkButton route="/signup" label="Sign Up" />
-              </div>
+              {/* Conditional rendering of UserButton or Auth buttons for mobile */}
+              {userData ? (
+                <UserButton />
+              ) : (
+                <div className="flex flex-col gap-3 mt-4">
+                  <LinkButton route="/login" label="Login" />
+                  <LinkButton route="/signup" label="Sign Up" />
+                </div>
+              )}
             </div>
           </SheetContent>
         </Sheet>

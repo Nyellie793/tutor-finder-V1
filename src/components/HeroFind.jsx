@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-import { Button } from "./ui/button";
+
 import SearchInput from "../components/SearchInput";
 
 const HeroFind = () => {
@@ -12,14 +11,12 @@ const HeroFind = () => {
         </h1>
 
         <div className="flex justify-between items-center">
-          <p className="line-clamp-1">
+          <p className="line-clamp-3">
             Looking for an online English tutor? Preply is the leading online
             language learning platform worldwide. You can choose from 33377
             English teachers with an average rating of 4.91 o
           </p>
-          <Button asChild variant="link" className="underline">
-            <Link to="./about">Show More</Link>
-          </Button>
+      
         </div>
 
         <div className="mt-">

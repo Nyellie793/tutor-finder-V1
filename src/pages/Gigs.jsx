@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer"
 import GigsCreate from "@/components/GigsCreate"
 import { GigsFaqs } from "@/components/GigsFaqs"
 import Navbar from "@/components/Navbar"
@@ -8,6 +9,7 @@ const GigsPage = () => {
         <Navbar />
         < GigsCreate />
         < GigsFaqs />
+        <Footer />
         
     </div>
   )

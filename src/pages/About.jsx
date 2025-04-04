@@ -1,8 +1,7 @@
 import Navbar from "../components/Navbar"
 import About from '../components/About'
-import Contact from "../components/Contact"
 import Footer from "../components/Footer"
-import "../index.css";
+// import "../index.css";
 
 
 
@@ -11,7 +10,6 @@ const AboutPage = () => {
     <div className="about">
        <Navbar />
        <About />
-       <Contact/>
        <Footer />
 
     </div>

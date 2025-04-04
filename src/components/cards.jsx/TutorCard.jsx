@@ -25,7 +25,7 @@ const TutorCard = ({ tutor }) => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row border-2 border-black rounded-lg p-4 shadow-sm w-full">
+    <div className="flex flex-col md:flex-row border-2 border-black rounded-lg p-4 shadow-sm w-full bg-gradient-to-r from-teal-50 to-purple-50">
       <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6 rounded-lg">
         <UserAvatar
           imageUrl={profile_image}
@@ -35,7 +35,7 @@ const TutorCard = ({ tutor }) => {
       </div>
 
       <div className="flex-grow flex flex-col">
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start ">
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-xl font-bold">{name}</h3>
@@ -71,8 +71,8 @@ const TutorCard = ({ tutor }) => {
         </div>
 
         <div className="mt-4 flex justify-between">
-           <AppBtn onClick={handleClick}>View Profile</AppBtn>
-            <Heart className="w-6 h-6 text-gray-400" />
+          <AppBtn onClick={handleClick}>View Profile</AppBtn>
+          <Heart className="w-6 h-6 text-gray-400" />
         </div>
       </div>
     </div>

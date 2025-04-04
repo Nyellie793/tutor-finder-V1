@@ -4,9 +4,8 @@ import Hero from "../components/home/Hero";
 import HowItWorks from "../components/HowItWorks";
 import Sponsors from "../components/home/Sponsors";
 import Subjects from "../components/home/Subjects";
-import Contact from "../components/Contact";
 import Footer from "../components/Footer";
-import "../index.css";
+// import "../index.css";
 
 function HomePage() {
   return (
@@ -15,9 +14,8 @@ function HomePage() {
         <Navbar />
         <Hero />
         <HowItWorks />
-        <Sponsors />
         <Subjects />
-        <Contact />
+        <Sponsors />
         <Footer />
       </div>
     </>

@@ -46,7 +46,7 @@ const Tutors = () => {
   };
 
   return (
-    <div className=" container bg-gradient-to-r from-teal-50 to-purple-50">
+    <div className=" container ">
       <div className="why"></div>
       <h1 className="text-3xl font-bold mb-2 mt-10">77,405 Tutors available</h1>
 

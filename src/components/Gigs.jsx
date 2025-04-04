@@ -1,5 +1,6 @@
 import GigsList from "./GigsList";
 import AppSelect from "./AppSelect";
+// import { useApi } from "@/utils/fetcher";
 
 const Tutors = () => {
   // Data for different select dropdowns
@@ -19,10 +20,8 @@ const Tutors = () => {
     { label: "Baking", value: "baking" },
     { label: "Cooking", value: "cooking" },
     { label: "Digital Skills", value: "digital_skills" },
-    { label: "Wig Installations", value: "wig_installations" },
     { label: "MS Skills", value: "ms_skills" },
-    { label: "Singing", value: "singing" },
-    { label: "Arts", value: "arts" },
+
   ];
 
   const byPicks = [
@@ -43,7 +42,10 @@ const Tutors = () => {
     // Additional logic here...
   };
 
+
   return (
+
+
     <div className="">
       <h1 className="text-2xl font-bold mb-2">100k+ Courses Avaliable</h1>
 

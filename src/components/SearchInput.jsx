@@ -28,16 +28,11 @@ const SearchInput = ({
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="flex-1 py-4 px-6 border-none rounded-lg text-base bg-[var(--grey-light)]"
+        className="flex-1 py-6 px-6 mt-1 border-none rounded-lg text-base bg-[var(--grey-light)]"
       />
       <button
         onClick={handleSearch}
-        className="py-4 px-8 rounded-lg text-[var(--white)] font-medium cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-        style={{
-          background: "var(--gradient-accent)",
-          backgroundImage:
-            "linear-gradient(to right, var(--lilac) 0%, var(--teal) 100%)",
-        }}
+        className="py-4 px-8 rounded-lg text-white bg-[#0097a7] font-medium cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
       >
         {buttonText}
       </button>
