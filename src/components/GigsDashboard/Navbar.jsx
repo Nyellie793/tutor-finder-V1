@@ -6,7 +6,7 @@ const user = {
   email: "nyelliembu@gmail.com",
 };
 
-console.log('na');
+console.log('gig nav');
 
 const Navbar = () => {
   return (

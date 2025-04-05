@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import TutorSidebar from "./TutorSidebar";
+// import Navbar from "./Navbar";
 import Navbar from "../../components/GigsDashboard/Navbar";
 
 const TutorDashboardLayout = () => {
@@ -13,7 +14,7 @@ const TutorDashboardLayout = () => {
 
           <div className="lg:pl-[264px] w-full">
             <div className="mx-auto max-w-screen-2xl h-full">
-              <Navbar />
+              <Navbar/>
               <main className="h-full py-8 px-6 flex flex-col">
                 <Outlet />
               </main>

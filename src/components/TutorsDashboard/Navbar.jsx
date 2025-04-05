@@ -3,6 +3,7 @@ import MobileSidebar from "./MobileSidebar";
 
 
 const Navbar = () => {
+  console.log("Tutor navbar")
   return (
     <nav className="pt-4 px-7 flex items-center justify-between">
       <div className="flex-col hidden lg:flex w-full">

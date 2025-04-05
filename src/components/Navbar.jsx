@@ -29,15 +29,15 @@ const Navbar = () => {
     { href: "/gigs", label: "Gigs" },
   ];
 
-  const navItems =
-    userType === "learner"
-      ? [
-          ...baseNavItems,
-          { href: "/learner-dashboard", label: "Learner Dashboard" },
-        ]
-      : baseNavItems;
-
-  console.log("nav");
+const navItems =
+  userType === "learner"
+    ? [
+        ...baseNavItems,
+        { href: "/learner-dashboard", label: "Dashboard" },
+      ]
+    : userType === "tutor"
+    ? [...baseNavItems, { href: "/tutor-dashboard", label: "Dashboard" }]
+    : baseNavItems;
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[rgba(199,184,234,0.2)]">
